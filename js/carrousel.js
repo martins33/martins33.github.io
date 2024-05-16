@@ -7,7 +7,10 @@ import * as Stats from 'three/addons/libs/stats.module.js';
 /* GLOBAL VARIABLES */
 //////////////////////
 
-var camera, scene, renderer, ambientLight;
+var camera, scene, renderer;
+var ambientLight, directionalLight;
+var geometry, material, mesh;
+var carroussel, cylinder, ring1, ring2, ring3;
 
 
 /////////////////////
@@ -48,8 +51,14 @@ function createCamera() {
 
 function createLights() {
     'use strict';
-    ambientLight = new THREE.AmbientLight(0xffa500, 5);
+    ambientLight = new THREE.AmbientLight(0xffa500, 0.5);
     scene.add(ambientLight);
+
+    // This isn't doing anything at the moment
+    directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(5, 5, 5);
+    directionalLight.lookAt(scene.position);
+    scene.add(directionalLight);
 
     //TODO: create other lights
 
@@ -59,20 +68,37 @@ function createLights() {
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 
-function createCylinder(radius, tubularSegments, radialSegments) {
+function createCarroussel() {
+    'use strict';
+    carroussel = new THREE.Object3D();
+
+    createCylinder(carroussel, 1, 64, 8);
+    createRings(carroussel, 1);
+
+    scene.add(carroussel);
+}
+
+function createCylinder(parent, radius, tubularSegments, radialSegments) {
+    'use strict';
+
+    cylinder = new THREE.Object3D();
+    cylinder.userData = { rotating: false }
+
     class StraightLineCurve extends THREE.Curve {
         getPoint(t) {
-            return new THREE.Vector3(0, t * 3, 0); // Adjust length of the cylinder here
+            return new THREE.Vector3(0, t * 3, 0);
         }
     }
 
-    const path = new StraightLineCurve();
-    const closed = true;
+    var path = new StraightLineCurve();
+    var closed = true;
 
-    const geometry = new THREE.TubeGeometry(path, radialSegments, radius, tubularSegments, closed);
-    const material = new THREE.MeshStandardMaterial({ color: 0x0077ff });
-    const tube = new THREE.Mesh(geometry, material);
-    scene.add(tube);
+    geometry = new THREE.TubeGeometry(path, radialSegments, radius, tubularSegments, closed);
+    material = new THREE.MeshNormalMaterial();  // Normal material
+    mesh = new THREE.Mesh(geometry, material);
+    var tube = new THREE.Mesh(geometry, material);
+    
+    parent.add(tube);
 
     //TODO: cada objeto deve ter 4 tipos de materiais, e devemos podemos mudar o tipo de shading com teclas
     /*
@@ -83,6 +109,33 @@ function createCylinder(radius, tubularSegments, radialSegments) {
         new THREE.MeshNormalMaterial()  // Normal material
     ];
     */
+}
+
+function createRings(parent, cylinderRadius) {
+    'use strict';
+
+    ring1 = new THREE.Object3D();
+    ring1.userData = { goingUp: false, goingDown: false }
+    ring2 = new THREE.Object3D();
+    ring2.userData = { goingUp: false, goingDown: false }
+    ring3 = new THREE.Object3D();
+    ring3.userData = { goingUp: false, goingDown: false }
+
+    geometry = new THREE.RingGeometry(cylinderRadius, cylinderRadius + 1);
+    material = new THREE.MeshNormalMaterial();  // Normal material
+    ring1 = new THREE.Mesh(geometry, material);
+    // ring1.rotation.x = Math.PI / 2; // this makes it disappear, for some reason
+    parent.add(ring1);
+
+    geometry = new THREE.RingGeometry(cylinderRadius + 1, cylinderRadius + 2);
+    ring2 = new THREE.Mesh(geometry, material);
+    // ring2.rotation.x = Math.PI / 2; // this makes it disappear, for some reason
+    parent.add(ring2);
+
+    geometry = new THREE.RingGeometry(cylinderRadius + 2, cylinderRadius + 3);
+    ring3 = new THREE.Mesh(geometry, material);
+    // ring3.rotation.x = Math.PI / 2; // this makes it disappear, for some reason
+    parent.add(ring3);
 }
 
 //TODO: create objects
@@ -133,7 +186,7 @@ function init() {
     createScene();
     createCamera();
     createLights();
-    createCylinder(1, 64, 8);
+    createCarroussel();
 
     render(scene,camera);
 
