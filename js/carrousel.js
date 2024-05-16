@@ -48,7 +48,7 @@ function createCamera() {
 
 function createLights() {
     'use strict';
-    ambientLight = new THREE.AmbientLight(0xffa500, 0.5);
+    ambientLight = new THREE.AmbientLight(0xffa500, 5);
     scene.add(ambientLight);
 
     //TODO: create other lights
@@ -58,6 +58,32 @@ function createLights() {
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
+
+function createCylinder(radius, tubularSegments, radialSegments) {
+    class StraightLineCurve extends THREE.Curve {
+        getPoint(t) {
+            return new THREE.Vector3(0, t * 3, 0); // Adjust length of the cylinder here
+        }
+    }
+
+    const path = new StraightLineCurve();
+    const closed = true;
+
+    const geometry = new THREE.TubeGeometry(path, radialSegments, radius, tubularSegments, closed);
+    const material = new THREE.MeshStandardMaterial({ color: 0x0077ff });
+    const tube = new THREE.Mesh(geometry, material);
+    scene.add(tube);
+
+    //TODO: cada objeto deve ter 4 tipos de materiais, e devemos podemos mudar o tipo de shading com teclas
+    /*
+    const materials = [
+        new THREE.MeshLambertMaterial({ color: 0xff0000 }),  // Red Lambert material
+        new THREE.MeshPhongMaterial({ color: 0x00ff00, shininess: 100 }),  // Green Phong material
+        new THREE.MeshToonMaterial({ color: 0xffffff }),  // Yellow Toon material
+        new THREE.MeshNormalMaterial()  // Normal material
+    ];
+    */
+}
 
 //TODO: create objects
 
@@ -107,6 +133,7 @@ function init() {
     createScene();
     createCamera();
     createLights();
+    createCylinder(1, 64, 8);
 
     render(scene,camera);
 
