@@ -203,7 +203,7 @@ function addPoint(x,y,z,angle,parent){
 
     //add stuff
 
-    //addBox(0,0,0,point); //enable to visualiza positions , temporary
+    addBox(0,0,0,point); //enable to visualiza positions , temporary
 
 
     //positions are flat on top of the rings
