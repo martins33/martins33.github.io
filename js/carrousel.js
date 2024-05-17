@@ -17,7 +17,7 @@ var ringPoints = [];
 var extrudeSettings = {
     amount : 2,
     steps : 1,
-    depth: 1, //ring heigth
+    depth: 1, // ring heigth
     bevelEnabled: false,
     curveSegments: 32
 };
