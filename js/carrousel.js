@@ -9,9 +9,10 @@ import * as Stats from 'three/addons/libs/stats.module.js';
 
 var camera, scene, renderer, controls;
 var ambientLight, directionalLight;
-var geometry, material, mesh;
+var geometry, material;
 var carroussel, cylinder, ring1, ring2, ring3;
-var innerRad = 1,ringThicc = 2,outerRad = 3;
+var innerRad = 1, ringThicc = 2, outerRad = 3;
+
 var extrudeSettings = {
     amount : 2,
     steps : 1,
@@ -294,7 +295,13 @@ function animate() {
 ////////////////////////////
 function onResize() { 
     'use strict';
-    //TODO
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    if (window.innerHeight > 0 && window.innerWidth > 0) {
+        camera.aspect = renderer.getSize().width/renderer.getSize().height;
+        camera.updateProjectionMatrix();
+    }
 }
 
 ///////////////////////
