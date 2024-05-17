@@ -302,7 +302,46 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict';
-    //TODO
+
+    switch (e.keyCode) {
+    case 49:  // Tecla '1' - Subir anel 1
+        
+        break;
+    case 50:  // Tecla '2' - Subir anel 2
+
+        break;
+    case 51:  // Tecla '3' - Subir anel 3
+
+        break;
+    case 68:  // Tecla 'D' - Toggle directional light
+    case 100: // d
+
+        break;
+    case 80:  // Tecla 'P' - Toggle point light
+    case 112: // p
+
+        break;
+    case 83:  // Tecla 'S' - Toggle spotlight
+    case 115: // s
+
+        break;
+    case 81:  // Tecla 'Q' - Toggle Gourand (diffuse) shading
+    case 113:  // q
+        
+        break;
+    case 87:  // Tecla 'W' - Toggle Phong shading
+    case 119: // w
+        
+        break;
+    case 69:  // Tecla 'E' - Toggle Cartoon shading
+    case 101: // e
+
+        break;
+    case 82:  // Tecla 'R' - Toggle NormalMap shading
+    case 114: // r
+
+        break;
+    }
 }
 
 ///////////////////////
@@ -310,7 +349,18 @@ function onKeyDown(e) {
 ///////////////////////
 function onKeyUp(e){
     'use strict';
-    //TODO
+    
+    switch (e.keyCode) {
+    case 49: // Tecla '1' - Subir anel 1
+        
+        break;
+    case 50: // Tecla '2' - Subir anel 2
+
+        break;
+    case 51: // Tecla '3' - Subir anel 3
+
+        break;
+    }
 }
 
 init();
