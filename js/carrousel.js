@@ -9,9 +9,10 @@ import * as Stats from 'three/addons/libs/stats.module.js';
 
 var camera, scene, renderer, controls;
 var ambientLight, directionalLight;
-var geometry, material;
+var geometry, material,mesh;
 var carroussel, cylinder, ring1, ring2, ring3;
 var innerRad = 1, ringThicc = 2, outerRad = 3;
+var ringPoints = [];
 
 var extrudeSettings = {
     amount : 2,
@@ -106,7 +107,7 @@ function createCylinder(parent, radius, tubularSegments, radialSegments) {
 
     geometry = new THREE.TubeGeometry(path, radialSegments, radius, tubularSegments, closed);
     material = new THREE.MeshNormalMaterial();  // Normal material
-    mesh = new THREE.Mesh(geometry, material);
+     mesh = new THREE.Mesh(geometry, material);
     var tube = new THREE.Mesh(geometry, material);
     
     parent.add(tube);
@@ -185,7 +186,51 @@ function addRing(inR,otR,parent){
     ring.rotateX(Math.PI/2);
     const mesh = new THREE.Mesh( ring, material ) ;
 
+    for(let i = 0,angle = 0; i<8;i++){
+        angle = Math.PI/4 * i;
+        let x= inR + ringThicc/2;
+        let y= 0.5;
+        let z= 0;
+        addPoint(x,y,z,angle,parent);
+    }
+ 
     parent.add( mesh )
+}
+
+function addPoint(x,y,z,angle,parent){
+
+    var point = new THREE.Object3D();
+
+    //add stuff
+
+    //addBox(0,0,0,point); //enable to visualiza positions , temporary
+
+
+    //positions are flat on top of the rings
+    point.position.set(0,0.5,0);
+    point.rotation.y = (angle);
+    point.translateX(x);
+
+    ringPoints.push(point); //for easy access
+    parent.add(point);
+
+}
+
+function addBox( x,y,z,parent){ //for testing
+    'use strict';
+
+    var box = new THREE.Object3D();
+    box.userData ={falling:false};
+
+    material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+    geometry = new THREE.BoxGeometry(2,2,2);
+    mesh = new THREE.Mesh(geometry, material);
+
+    box.add(mesh);
+    box.position.set(x, y, z);
+
+    parent.add(box);
+
 }
 
 //TODO: create objects
