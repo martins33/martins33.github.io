@@ -9,14 +9,14 @@ import * as Stats from 'three/addons/libs/stats.module.js';
 
 var camera, scene, renderer, controls;
 var ambientLight, directionalLight;
-var geometry, material;
+var geometry, material, mesh;
 var carroussel, cylinder, ring1, ring2, ring3;
 var innerRad = 1, ringThicc = 2, outerRad = 3;
 
 var extrudeSettings = {
     amount : 2,
     steps : 1,
-    depth: 1, //ring heigth
+    depth: 1, // ring heigth
     bevelEnabled: false,
     curveSegments: 32
 };
