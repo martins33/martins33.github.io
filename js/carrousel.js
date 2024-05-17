@@ -83,6 +83,7 @@ function createLights() {
 function createCarroussel() {
     'use strict';
     carroussel = new THREE.Object3D();
+    carroussel.userData = { rotating:true } //fix for testing
 
     createCylinder(carroussel, 1, 64, 8);
     createRings(carroussel, 1);
@@ -94,18 +95,9 @@ function createCylinder(parent, radius, tubularSegments, radialSegments) {
     'use strict';
 
     cylinder = new THREE.Object3D();
-    cylinder.userData = { rotating: false }
+    
 
-    class StraightLineCurve extends THREE.Curve {
-        getPoint(t) {
-            return new THREE.Vector3(0, t * 3, 0);
-        }
-    }
-
-    var path = new StraightLineCurve();
-    var closed = true;
-
-    geometry = new THREE.TubeGeometry(path, radialSegments, radius, tubularSegments, closed);
+    geometry = new THREE.CylinderGeometry(1,1,1);
     material = new THREE.MeshNormalMaterial();  // Normal material
      mesh = new THREE.Mesh(geometry, material);
     var tube = new THREE.Mesh(geometry, material);
@@ -133,25 +125,7 @@ function createRings(parent, cylinderRadius) {
     ring2.userData = { goingUp: false, goingDown: true }
     ring3 = new THREE.Object3D();
     ring3.userData = { goingUp: true, goingDown: false }
-/*
-    geometry = new THREE.RingGeometry(cylinderRadius, cylinderRadius + 1);
-    material = new THREE.MeshBasicMaterial({color:  Math.random() * 0xffffff,side: THREE.DoubleSide});  // Normal material
-    ring1 = new THREE.Mesh(geometry, material);
-    ring1.rotateX(Math.PI / 2); // this makes it disappear, for some reason
-    parent.add(ring1);
 
-    geometry = new THREE.RingGeometry(cylinderRadius + 1, cylinderRadius + 2);
-    material = new THREE.MeshBasicMaterial({color:  Math.random() * 0xffffff,side: THREE.DoubleSide}); 
-    ring2 = new THREE.Mesh(geometry, material);
-    ring2.rotateX(Math.PI / 2); // this makes it disappear, for some reason
-    parent.add(ring2);
-
-    geometry = new THREE.RingGeometry(cylinderRadius + 2, cylinderRadius + 3);
-    material = new THREE.MeshBasicMaterial({color:  Math.random() * 0xffffff,side: THREE.DoubleSide}); 
-    ring3 = new THREE.Mesh(geometry, material);
-    ring3.rotateX(Math.PI / 2); // this makes it disappear, for some reason
-    parent.add(ring3);
-*/
     
     for(let i=0;i<3;i++){
         let ring;
@@ -323,6 +297,10 @@ function testing(){
         if(ring3.position.y <=-2){ ring3.userData.goingUp = true; ring3.userData.goingDown = false;}
     }
 
+    if(carroussel.userData.rotating){
+        carroussel.rotateY(-0.02);
+        if(carroussel.rotation.y >= Math.PI*2) carroussel.rotation.y - Math.PI*2;
+    }
 }
 
 function animate() {
