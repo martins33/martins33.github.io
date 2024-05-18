@@ -122,14 +122,14 @@ function createRings(parent, cylinderRadius) {
     'use strict';
 
     ring1 = new THREE.Object3D();
-    ring1.userData = { goingUp: false, goingDown: false }
+    ring1.userData = { goingUp: false, oscillating: false }
     ring2 = new THREE.Object3D();
-    ring2.userData = { goingUp: false, goingDown: false }
+    ring2.userData = { goingUp: false, oscillating: false }
     ring3 = new THREE.Object3D();
-    ring3.userData = { goingUp: false, goingDown: false }
+    ring3.userData = { goingUp: false, oscillating: false }
 
     
-    for(let i=0;i<3;i++){
+    for(let i = 0; i < 3; i++){
         let ring;
         switch (i){
             case 0: ring = ring1;
@@ -144,7 +144,6 @@ function createRings(parent, cylinderRadius) {
         innerRad = outerRad;
         outerRad += ringThicc;
         
-        ring.position.set(0,1,0);
         parent.add(ring);
     }
 }
@@ -216,7 +215,7 @@ function addBox( x,y,z,parent){ //for testing
 //////////////////////
 function checkCollisions(){
     'use strict';
-    //TODO
+    //TODO: is this necessary for this project?
 }
 
 ///////////////////////
@@ -224,7 +223,7 @@ function checkCollisions(){
 ///////////////////////
 function handleCollisions(){
     'use strict';
-    //TODO
+    //TODO: is this necessary for this project?
 }
 
 ////////////
@@ -232,7 +231,23 @@ function handleCollisions(){
 ////////////
 function update(){
     'use strict';
-    //TODO
+    //TODO: rotate carroussel
+
+    let ring;
+    for (let i = 1; i <= 3; i++) {
+        switch(i) {
+        case 1: ring = ring1;
+            break;
+        case 2: ring = ring2;
+            break;
+        case 3: ring = ring3;
+            break;
+        }
+
+        if (ring.oscillating) {
+            oscillateRing(i);
+        }
+    }
 }
 
 /////////////
@@ -264,64 +279,50 @@ function init() {
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
-
-    testvars();
 }
 
 /////////////////////
 /* ANIMATION CYCLE */
 /////////////////////
 
-function testvars(){
-    //fix remove later
-    ring1.userData.goingUp = true;
-    ring2.userData.goingDown = true;
-    ring3.userData.goingUp = true;
-}
-
 function testing(){
-    
-    if(ring1.userData.goingUp && ring1.position.y <=2){
-        ring1.position.y += 0.1;
-        if(ring1.position.y >=2) {ring1.userData.goingUp = false; ring1.userData.goingDown = true;}
-    }
-    else if(ring1.userData.goingDown && ring1.position.y >=-2){
-        ring1.position.y -= 0.1;
-        if(ring1.position.y <=-2){ ring1.userData.goingUp = true; ring1.userData.goingDown = false;}
-    }
-
-    if(ring2.userData.goingUp && ring2.position.y <=2){
-        ring2.position.y += 0.15;
-        if(ring2.position.y >=2) {ring2.userData.goingUp = false; ring2.userData.goingDown = true;}
-    }
-    else if(ring2.userData.goingDown && ring2.position.y >=-2){
-        ring2.position.y -= 0.15;
-        if(ring2.position.y <=-2){ ring2.userData.goingUp = true; ring2.userData.goingDown = false;}
-    }
-
-    if(ring3.userData.goingUp && ring3.position.y <=2){
-        ring3.position.y += 0.2;
-        if(ring3.position.y >=2) {ring3.userData.goingUp = false; ring3.userData.goingDown = true;}
-    }
-    else if(ring3.userData.goingDown && ring3.position.y >=-2){
-        ring3.position.y -= 0.2;
-        if(ring3.position.y <=-2){ ring3.userData.goingUp = true; ring3.userData.goingDown = false;}
-    }
-
     if(carroussel.userData.rotating){
         carroussel.rotateY(-0.02);
         if(carroussel.rotation.y >= Math.PI*2) carroussel.rotation.y - Math.PI*2;
     }
 }
 
+function oscillateRing(ringIndex) {
+    let ring;
+    switch(ringIndex) {
+    case 1: ring = ring1;
+        break;
+    case 2: ring = ring2;
+        break;
+    case 3: ring = ring3;
+        break;
+    }
+
+    if (ring.position.y <= 0 || ring.position.y >= 1) {
+        // Switch directions if upper or lower limit is reached
+        ring.goingUp = !ring.goingUp;
+    }
+
+    if (ring.goingUp) {
+        ring.position.y += 0.01;
+    } else {
+        ring.position.y -= 0.01;
+    }
+}
+
 function animate() {
     'use strict';
     //TODO
-    testing();
+    //testing();
     
-    requestAnimationFrame( animate );
-    render();
     update();
+    render();
+    requestAnimationFrame(animate);
 }
 
 ////////////////////////////
@@ -345,14 +346,14 @@ function onKeyDown(e) {
     'use strict';
 
     switch (e.keyCode) {
-    case 49:  // Tecla '1' - Subir anel 1
-        
+    case 49:  // Tecla '1' - Oscilar anel 1
+        ring1.oscillating = !ring1.oscillating;
         break;
-    case 50:  // Tecla '2' - Subir anel 2
-
+    case 50:  // Tecla '2' - Oscilar anel 2
+        ring2.oscillating = !ring2.oscillating;
         break;
-    case 51:  // Tecla '3' - Subir anel 3
-
+    case 51:  // Tecla '3' - Oscilar anel 3
+        ring3.oscillating = !ring3.oscillating;
         break;
     case 68:  // Tecla 'D' - Toggle directional light
     case 100: // d
@@ -385,6 +386,7 @@ function onKeyDown(e) {
     }
 }
 
+
 ///////////////////////
 /* KEY UP CALLBACK */
 ///////////////////////
@@ -392,15 +394,7 @@ function onKeyUp(e){
     'use strict';
     
     switch (e.keyCode) {
-    case 49: // Tecla '1' - Subir anel 1
-        
-        break;
-    case 50: // Tecla '2' - Subir anel 2
-
-        break;
-    case 51: // Tecla '3' - Subir anel 3
-
-        break;
+    //TODO: remove this?
     }
 }
 
