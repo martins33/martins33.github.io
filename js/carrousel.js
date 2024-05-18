@@ -103,7 +103,7 @@ function createCylinder(parent, radius, tubularSegments, radialSegments) {
     mesh = new THREE.Mesh(geometry, material);
     mesh.rotateX(Math.PI/2);
 
-    mesh.position.y += 1;
+    //mesh.position.y += 1;
 
     parent.add(mesh);
 
@@ -248,6 +248,8 @@ function update(){
             oscillateRing(i);
         }
     }
+
+    spin();
 }
 
 /////////////
@@ -285,7 +287,7 @@ function init() {
 /* ANIMATION CYCLE */
 /////////////////////
 
-function testing(){
+function spin(){
     if(carroussel.userData.rotating){
         carroussel.rotateY(-0.02);
         if(carroussel.rotation.y >= Math.PI*2) carroussel.rotation.y - Math.PI*2;
@@ -303,15 +305,15 @@ function oscillateRing(ringIndex) {
         break;
     }
 
-    if (ring.position.y <= 0 || ring.position.y >= 1) {
+    if (ring.position.y <= -1 || ring.position.y >= 1) {
         // Switch directions if upper or lower limit is reached
         ring.goingUp = !ring.goingUp;
     }
 
     if (ring.goingUp) {
-        ring.position.y += 0.01;
+        ring.position.y += 0.05;
     } else {
-        ring.position.y -= 0.01;
+        ring.position.y -= 0.05;
     }
 }
 
