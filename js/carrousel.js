@@ -94,15 +94,18 @@ function createCarroussel() {
 function createCylinder(parent, radius, tubularSegments, radialSegments) {
     'use strict';
 
-    cylinder = new THREE.Object3D();
+    var arcShape = new THREE.Shape();
+    arcShape.absarc(0, 0,1, 0, Math.PI * 2, 0, false);
     
+    geometry = new THREE.ExtrudeGeometry(arcShape, extrudeSettings);
 
-    geometry = new THREE.CylinderGeometry(1,1,1);
     material = new THREE.MeshNormalMaterial();  // Normal material
-     mesh = new THREE.Mesh(geometry, material);
-    var tube = new THREE.Mesh(geometry, material);
-    
-    parent.add(tube);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.rotateX(Math.PI/2);
+
+    mesh.position.y += 1;
+
+    parent.add(mesh);
 
     //TODO: cada objeto deve ter 4 tipos de materiais, e devemos podemos mudar o tipo de shading com teclas
     /*
@@ -117,14 +120,13 @@ function createCylinder(parent, radius, tubularSegments, radialSegments) {
 
 function createRings(parent, cylinderRadius) {
     'use strict';
-    
-    //fix to false after testing
+
     ring1 = new THREE.Object3D();
-    ring1.userData = { goingUp: true, goingDown: false }
+    ring1.userData = { goingUp: false, goingDown: false }
     ring2 = new THREE.Object3D();
-    ring2.userData = { goingUp: false, goingDown: true }
+    ring2.userData = { goingUp: false, goingDown: false }
     ring3 = new THREE.Object3D();
-    ring3.userData = { goingUp: true, goingDown: false }
+    ring3.userData = { goingUp: false, goingDown: false }
 
     
     for(let i=0;i<3;i++){
@@ -262,11 +264,20 @@ function init() {
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
+
+    testvars();
 }
 
 /////////////////////
 /* ANIMATION CYCLE */
 /////////////////////
+
+function testvars(){
+    //fix remove later
+    ring1.userData.goingUp = true;
+    ring2.userData.goingDown = true;
+    ring3.userData.goingUp = true;
+}
 
 function testing(){
     
@@ -280,11 +291,11 @@ function testing(){
     }
 
     if(ring2.userData.goingUp && ring2.position.y <=2){
-        ring2.position.y += 0.1;
+        ring2.position.y += 0.15;
         if(ring2.position.y >=2) {ring2.userData.goingUp = false; ring2.userData.goingDown = true;}
     }
     else if(ring2.userData.goingDown && ring2.position.y >=-2){
-        ring2.position.y -= 0.1;
+        ring2.position.y -= 0.15;
         if(ring2.position.y <=-2){ ring2.userData.goingUp = true; ring2.userData.goingDown = false;}
     }
 
