@@ -26,6 +26,19 @@ var extrudeSettings = {
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
+
+function createSkyDome() {
+    'use strict';
+    geometry = new THREE.SphereGeometry(10, 25, 25);
+
+    var loader = new THREE.TextureLoader(), texture = loader.load("../img/an_optical_poem.png");
+    material = new THREE.MeshPhongMaterial({ map: texture, });
+
+    var sky = new THREE.Mesh(geometry, material);
+    sky.material.side = THREE.BackSide;
+    scene.add(sky);
+}
+
 function createScene(){
     'use strict';
 
@@ -362,6 +375,7 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     createScene();
+    createSkyDome();
     createCamera();
     createLights();
     createCarroussel();
@@ -427,7 +441,7 @@ function onResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     if (window.innerHeight > 0 && window.innerWidth > 0) {
-        camera.aspect = renderer.getSize().width/renderer.getSize().height;
+        camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
     }
 }
