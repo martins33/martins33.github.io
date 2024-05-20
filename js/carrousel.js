@@ -13,7 +13,7 @@ var ambientLight, directionalLight;
 var geometry, material,mesh;
 var carroussel, strip, ring1, ring2, ring3;
 var innerRad = 1, ringThicc = 2, outerRad = 3;
-var ringPoints = [];
+var ringPoints = [], mobiusLigths= [];
 
 var extrudeSettings = {
     amount : 2,
@@ -345,7 +345,8 @@ function calcPos(r,w,h,s,t){
 
     var Point = new THREE.Vector3(r,h,0);
     var baseVector = new THREE.Vector3(w/2,0,0);
-    var transVector;
+    var transVector, Vl;
+    var light;
 
     var x1,y1,z1,x2,y2,z2;
 
@@ -353,6 +354,11 @@ function calcPos(r,w,h,s,t){
     x2 = Point.x - baseVector.x; y2 = Point.y - baseVector.y; z2 = Point.z - baseVector.z;
 
     positions.push(x1);positions.push(y1);positions.push(z1);positions.push(x2);positions.push(y2);positions.push(z2);
+    light = new THREE.PointLight( 0xffffff, 5, 100 );
+    light.position.set( r, h+0.1, 0 );
+    scene.add( light );
+    mobiusLigths.push(light);
+
 
     for(let i=1;i<s;i++){
         Point.applyAxisAngle(axiY,angle*2);
@@ -364,6 +370,18 @@ function calcPos(r,w,h,s,t){
         x2 = Point.x - transVector.x; y2 = Point.y - transVector.y; z2 = Point.z - transVector.z;
 
         positions.push(x1);positions.push(y1);positions.push(z1);positions.push(x2);positions.push(y2);positions.push(z2);
+
+        if((angle*i) % (Math.PI/8) == 0){
+            Vl = new THREE.Vector3(0,0.1,0);
+            Vl.applyAxisAngle(axiZ,angle*i*twists);
+            Vl.applyAxisAngle(axiY,angle*i*2);
+
+            light = new THREE.PointLight( 0xffffff, 5, 100 );
+            light.position.set( Point.x+Vl.x, Point.y+Vl.y, Point.z+Vl.z );
+            scene.add( light );
+            mobiusLigths.push(light);
+        }
+
     }
 
     return positions;
@@ -373,7 +391,7 @@ function calcInd(s,t){
     var indices = [];
     var i=0;
     for(;i<s*2 - 2;i++){
-        if(i%2 != 0){
+        if(i%2 == 0){
             indices.push(i); indices.push(i+2); indices.push(i+1);
         }
         else { 
@@ -386,8 +404,8 @@ function calcInd(s,t){
         indices.push(s*2-1); indices.push(0); indices.push(1);
     }
     else{
-        indices.push(s*2-1); indices.push(s*2-2); indices.push(0);
-        indices.push(s*2-2); indices.push(0); indices.push(1);
+        indices.push(s*2-2); indices.push(0); indices.push(s*2-1);
+        indices.push(s*2-2); indices.push(1); indices.push(0); 
     }
 
     return indices;
@@ -398,14 +416,14 @@ function createStrip(){
     strip = new THREE.BufferGeometry();
 
     var segments = 64;
-    var twists = 1;
+    var twists = 2;
 
     const positions = calcPos(5,2,7,segments, twists); //radius to strip middle , width , height , twists
     const indices = calcInd(segments,twists);
     
     strip.setIndex(indices);
 
-    material = new THREE.MeshBasicMaterial( { color:  Math.random() * 0xffffff, side: THREE.DoubleSide ,wireframe: false} );
+    material = new THREE.MeshStandardMaterial( { color:  Math.random() * 0xffffff, side: THREE.DoubleSide ,wireframe: false} );
     strip.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
     strip.computeVertexNormals();
     
