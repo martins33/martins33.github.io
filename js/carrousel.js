@@ -497,7 +497,6 @@ function init() {
     render(scene,camera);
 
     window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
 }
 
