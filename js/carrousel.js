@@ -218,25 +218,25 @@ function createCylinder(parent, radius, tubularSegments, radialSegments) {
     */
 }
 
-function createRings(parent, cylinderRadius) {
+function createRings(parent) {
     'use strict';
 
     ring1 = new THREE.Object3D();
-    ring1.userData = { goingUp: false, oscillating: false }
+    ring1.userData = { goingUp: false, oscillating: true }
     ring2 = new THREE.Object3D();
-    ring2.userData = { goingUp: false, oscillating: false }
+    ring2.userData = { goingUp: false, oscillating: true }
     ring3 = new THREE.Object3D();
-    ring3.userData = { goingUp: false, oscillating: false }
+    ring3.userData = { goingUp: false, oscillating: true }
 
     
     for(let i = 0; i < 3; i++){
         let ring;
         switch (i){
-            case 0: ring = ring1;
+            case 0: ring = ring1; ring1.oscillating = true;
             break;
-            case 1: ring = ring2;
+            case 1: ring = ring2; ring2.oscillating = true;
             break;
-            case 2: ring = ring3;
+            case 2: ring = ring3; ring3.oscillating = true;
             break;
         }
 
@@ -497,9 +497,9 @@ function oscillateRing(ringIndex) {
     }
 
     if (ring.goingUp) {
-        ring.position.y += 0.05;
+        ring.position.y += 0.02;
     } else {
-        ring.position.y -= 0.05;
+        ring.position.y -= 0.02;
     }
 }
 
