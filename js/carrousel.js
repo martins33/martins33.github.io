@@ -373,11 +373,16 @@ function calcInd(s,t){
     var indices = [];
     var i=0;
     for(;i<s*2 - 2;i++){
-        indices.push(i); indices.push(i+1); indices.push(i+2);
+        if(i%2 != 0){
+            indices.push(i); indices.push(i+2); indices.push(i+1);
+        }
+        else { 
+            indices.push(i); indices.push(i+1); indices.push(i+2);
+        }
     }
     
     if(t%2==0){
-        indices.push(s*2-2); indices.push(s*2-1); indices.push(0);
+        indices.push(s*2-1); indices.push(s*2-2); indices.push(0);
         indices.push(s*2-1); indices.push(0); indices.push(1);
     }
     else{
