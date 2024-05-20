@@ -334,10 +334,11 @@ function addParametricSurface(x, y, z, angle, parent, index){
 
 //TODO: create objects
 
-//radisu - distance to middle of strip , widht of strip , height , number of radial segments
-function calcPos(r,w,h,s){
+//radius - distance to middle of strip , widht of strip , height , number of radial segments , twists
+function calcPos(r,w,h,s,t){
     var positions=[];
-    var angle = Math.PI*2 / s;
+    var angle = Math.PI / s;
+    var twists = t;
 
     var axiY = new THREE.Vector3(0,1,0);
     var axiZ = new THREE.Vector3(0,0,1);
@@ -354,10 +355,10 @@ function calcPos(r,w,h,s){
     positions.push(x1);positions.push(y1);positions.push(z1);positions.push(x2);positions.push(y2);positions.push(z2);
 
     for(let i=1;i<s;i++){
-        Point.applyAxisAngle(axiY,angle);
+        Point.applyAxisAngle(axiY,angle*2);
         transVector = baseVector.clone();
-        transVector.applyAxisAngle(axiZ,angle*i);
-        transVector.applyAxisAngle(axiY,angle*i);
+        transVector.applyAxisAngle(axiZ,angle*i*twists);
+        transVector.applyAxisAngle(axiY,angle*i*2);
 
         x1 = Point.x + transVector.x; y1 = Point.y + transVector.y; z1 = Point.z + transVector.z;
         x2 = Point.x - transVector.x; y2 = Point.y - transVector.y; z2 = Point.z - transVector.z;
@@ -368,14 +369,21 @@ function calcPos(r,w,h,s){
     return positions;
 }
 
-function calcInd(s){
+function calcInd(s,t){
     var indices = [];
     var i=0;
     for(;i<s*2 - 2;i++){
         indices.push(i); indices.push(i+1); indices.push(i+2);
     }
+    
+    if(t%2==0){
         indices.push(s*2-2); indices.push(s*2-1); indices.push(0);
         indices.push(s*2-1); indices.push(0); indices.push(1);
+    }
+    else{
+        indices.push(s*2-1); indices.push(s*2-2); indices.push(0);
+        indices.push(s*2-2); indices.push(0); indices.push(1);
+    }
 
     return indices;
 }
@@ -385,9 +393,10 @@ function createStrip(){
     strip = new THREE.BufferGeometry();
 
     var segments = 64;
+    var twists = 1;
 
-    const positions = calcPos(5,2,7,segments); //radius to strip middle , width , height
-    const indices = calcInd(segments);
+    const positions = calcPos(5,2,7,segments, twists); //radius to strip middle , width , height , twists
+    const indices = calcInd(segments,twists);
     
     strip.setIndex(indices);
 
