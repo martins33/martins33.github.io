@@ -402,7 +402,7 @@ function createStrip(){
 
     material = new THREE.MeshBasicMaterial( { color:  Math.random() * 0xffffff, side: THREE.DoubleSide ,wireframe: false} );
     strip.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
-    
+    strip.computeVertexNormals();
     
     const object = new THREE.Mesh( strip,material);
 
