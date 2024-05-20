@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
 import { VRButton } from 'three/addons/webxr/VRButton.js';
 import * as Stats from 'three/addons/libs/stats.module.js';
 
@@ -89,6 +90,92 @@ function createLights() {
 
 }
 
+///////////////////////////////////
+/* PARAMETRIC GEOMETRY FUNCTIONS */
+///////////////////////////////////
+
+function deltoid(u, v, target) {
+    u *= 2 * Math.PI;
+
+    const x = 2 * Math.cos(u) + Math.cos(2 * u);
+    const y = 2 * Math.sin(u) - Math.sin(2 * u);
+    const z = v;
+
+    target.set(x, y, z);
+}
+
+function mobius(u, t, target) {
+    u = u - 0.5;
+    const v = 2 * Math.PI * t;
+
+    const x = Math.cos(v) * (1 + 0.5 * u * Math.cos(v / 2));
+    const y = Math.sin(v) * (1 + 0.5 * u * Math.cos(v / 2));
+    const z = 0.5 * u * Math.sin(v / 2);
+
+    target.set(x, y, z);
+}
+
+function torus(u, v, target) {
+    u *= 2 * Math.PI;
+    v *= 2 * Math.PI;
+
+    const x = (1 + 0.5 * Math.cos(v)) * Math.cos(u);
+    const y = (1 + 0.5 * Math.cos(v)) * Math.sin(u);
+    const z = 0.5 * Math.sin(v);
+
+    target.set(x, y, z);
+}
+
+function plane(u, v, target) {
+    const x = u * 2 - 1;
+    const y = v * 2 - 1;
+    const z = 0;
+
+    target.set(x, y, z);
+}
+
+function sphere(u, v, target) {
+    u *= Math.PI;
+    v *= 2 * Math.PI;
+
+    const x = Math.sin(u) * Math.cos(v);
+    const y = Math.sin(u) * Math.sin(v);
+    const z = Math.cos(u);
+
+    target.set(x, y, z);
+}
+
+function cylinder(u, v, target) {
+    u *= 2 * Math.PI;
+    const x = Math.cos(u);
+    const y = Math.sin(u);
+    const z = v * 2 - 1;
+
+    target.set(x, y, z);
+}
+
+function cone(u, v, target) {
+    u *= 2 * Math.PI;
+    const x = (1 - v) * Math.cos(u);
+    const y = (1 - v) * Math.sin(u);
+    const z = v;
+
+    target.set(x, y, z);
+}
+
+function twistedTorus(u, v, target) {
+    u *= 2 * Math.PI;
+    v *= 2 * Math.PI;
+
+    const R = 1;
+    const r = 0.3;
+    const x = (R + r * Math.cos(v)) * Math.cos(u);
+    const y = (R + r * Math.cos(v)) * Math.sin(u);
+    const z = r * Math.sin(v) * Math.cos(u * 2);
+
+    target.set(x, y, z);
+}
+
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
@@ -174,54 +261,76 @@ function addRing(inR,otR,parent){
     ring.rotateX(Math.PI/2);
     const mesh = new THREE.Mesh( ring, material ) ;
 
-    for(let i = 0,angle = 0; i<8;i++){
+    for(let i = 0, angle = 0; i < 8; i++){
         angle = Math.PI/4 * i;
-        let x= inR + ringThicc/2;
-        let y= 0.5;
-        let z= 0;
-        addPoint(x,y,z,angle,parent);
+        let x = inR + ringThicc/2;
+        let y = 0.5;
+        let z = 0;
+        addParametricSurface(x, y, z, angle, parent, i);
     }
  
-    parent.add( mesh )
+    parent.add( mesh );
 }
 
-function addPoint(x,y,z,angle,parent){
+function addParametricSurface(x, y, z, angle, parent, index){
 
-    var point = new THREE.Object3D();
+    var surface = new THREE.Object3D();
+    var surfaceInner = new THREE.Object3D(); // to make the surface rotate around itself
 
-    //add stuff
+    surfaceInner.rotation.set(
+        Math.random() * Math.PI * 2,
+        Math.random() * Math.PI * 2,
+        Math.random() * Math.PI * 2
+    );
 
-    addBox(0,0,0,point); //enable to visualiza positions , temporary
+    let randomSize = Math.random() * (0.5 - 0.2) + 0.2;
 
+    switch (index) {
+    case 0:
+        geometry = new ParametricGeometry(deltoid, 20, 20);
+        geometry.scale(0.8,0.8,0.8); // it's too big compared to the others
+        break;
+    case 1:
+        geometry = new ParametricGeometry(torus, 20, 20);
+        break;
+    case 2:
+        geometry = new ParametricGeometry(mobius, 20, 20);
+        break;
+    case 3:
+        geometry = new ParametricGeometry(plane, 20, 20);
+        break;
+    case 4:
+        geometry = new ParametricGeometry(sphere, 20, 20);
+        break;
+    case 5:
+        geometry = new ParametricGeometry(cylinder, 20, 20);
+        break;
+    case 6:
+        geometry = new ParametricGeometry(cone, 20, 20);
+        break;
+    case 7:
+        geometry = new ParametricGeometry(twistedTorus, 20, 20);
+        break;
+    }
 
-    //positions are flat on top of the rings
-    point.position.set(0,0.5,0);
-    point.rotation.y = (angle);
-    point.translateX(x);
-
-    ringPoints.push(point); //for easy access
-    parent.add(point);
-
-}
-
-function addBox( x,y,z,parent){ //for testing
-    'use strict';
-
-    var box = new THREE.Object3D();
-    box.userData ={falling:false};
+    geometry.scale(randomSize, randomSize, randomSize);
 
     material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
-    geometry = new THREE.BoxGeometry(2,2,2);
     mesh = new THREE.Mesh(geometry, material);
+    surfaceInner.add(mesh);
+    surface.add(surfaceInner);
+    surface.position.set(x,y,z);
 
-    box.add(mesh);
-    box.position.set(x, y, z);
+    parent.add(surface);
 
-    parent.add(box);
+    //positions are flat on top of the rings
+    surface.position.set(0,0.5,0);
+    surface.rotation.y = (angle);
+    surface.translateX(x);
 
+    ringPoints.push(surface); //for easy access
+    parent.add(surface);
 }
-
-//TODO: create objects
 
 function createStrip(){
 
@@ -311,22 +420,6 @@ function createStrip(){
 
     scene.add(object);
 
-}
-
-//////////////////////
-/* CHECK COLLISIONS */
-//////////////////////
-function checkCollisions(){
-    'use strict';
-    //TODO: is this necessary for this project?
-}
-
-///////////////////////
-/* HANDLE COLLISIONS */
-///////////////////////
-function handleCollisions(){
-    'use strict';
-    //TODO: is this necessary for this project?
 }
 
 ////////////
