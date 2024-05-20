@@ -13,7 +13,7 @@ var ambientLight, directionalLight;
 var geometry, material,mesh;
 var carroussel, strip, ring1, ring2, ring3;
 var innerRad = 1, ringThicc = 2, outerRad = 3;
-var ringPoints = [], mobiusLigths= [];
+var ringPoints = [], mobiusLigths = [], underLights = [];
 
 var extrudeSettings = {
     amount : 2,
@@ -321,6 +321,13 @@ function addParametricSurface(x, y, z, angle, parent, index){
     surface.add(surfaceInner);
     surface.position.set(x,y,z);
 
+    let spotlight = new THREE.SpotLight(0xffffff);
+    spotlight.position.set(0, -0.5, 0); // Position it just below the surface
+    spotlight.target.position.set(0, 0, 0); // Pointing upwards towards the surface
+    surface.add(spotlight);
+    surface.add(spotlight.target);
+    underLights.push(spotlight);
+
     parent.add(surface);
 
     //positions are flat on top of the rings
@@ -573,14 +580,13 @@ function onKeyDown(e) {
         directionalLight.visible = !directionalLight.visible;
         ambientLight.visible = !ambientLight.visible;
         break;
-    case 80:  // Tecla 'P' - Toggle point light
+    case 80:  // Tecla 'P' - Toggle point lights
     case 112: // p
-        console.log(mobiusLigths);
         mobiusLigths.forEach(light => { light.visible = !light.visible; });
         break;
-    case 83:  // Tecla 'S' - Toggle spotlight
+    case 83:  // Tecla 'S' - Toggle spotlights
     case 115: // s
-
+        underLights.forEach(light => { light.visible = !light.visible; });
         break;
     case 81:  // Tecla 'Q' - Toggle Gourand (diffuse) shading
     case 113:  // q
@@ -598,18 +604,6 @@ function onKeyDown(e) {
     case 114: // r
 
         break;
-    }
-}
-
-
-///////////////////////
-/* KEY UP CALLBACK */
-///////////////////////
-function onKeyUp(e){
-    'use strict';
-    
-    switch (e.keyCode) {
-    //TODO: remove this?
     }
 }
 
