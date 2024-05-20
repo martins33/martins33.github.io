@@ -359,7 +359,6 @@ function calcPos(r,w,h,s,t){
     scene.add( light );
     mobiusLigths.push(light);
 
-
     for(let i=1;i<s;i++){
         Point.applyAxisAngle(axiY,angle*2);
         transVector = baseVector.clone();
@@ -423,7 +422,10 @@ function createStrip(){
     
     strip.setIndex(indices);
 
-    material = new THREE.MeshStandardMaterial( { color:  Math.random() * 0xffffff, side: THREE.DoubleSide ,wireframe: false} );
+    material = new THREE.MeshStandardMaterial({ 
+        color:  Math.random() * 0xffffff,
+        side: THREE.DoubleSide,
+        wireframe: false });
     strip.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
     strip.computeVertexNormals();
     
@@ -568,11 +570,13 @@ function onKeyDown(e) {
         break;
     case 68:  // Tecla 'D' - Toggle directional light
     case 100: // d
-
+        directionalLight.visible = !directionalLight.visible;
+        ambientLight.visible = !ambientLight.visible;
         break;
     case 80:  // Tecla 'P' - Toggle point light
     case 112: // p
-
+        console.log(mobiusLigths);
+        mobiusLigths.forEach(light => { light.visible = !light.visible; });
         break;
     case 83:  // Tecla 'S' - Toggle spotlight
     case 115: // s
