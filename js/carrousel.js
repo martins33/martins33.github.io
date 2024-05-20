@@ -332,83 +332,62 @@ function addParametricSurface(x, y, z, angle, parent, index){
     parent.add(surface);
 }
 
+//TODO: create objects
+
+//radisu - distance to middle of strip , widht of strip , height , number of radial segments
+function calcPos(r,w,h,s){
+    var positions=[];
+    var angle = Math.PI*2 / s;
+
+    var axiY = new THREE.Vector3(0,1,0);
+    var axiZ = new THREE.Vector3(0,0,1);
+
+    var Point = new THREE.Vector3(r,h,0);
+    var baseVector = new THREE.Vector3(w/2,0,0);
+    var transVector;
+
+    var x1,y1,z1,x2,y2,z2;
+
+    x1 = Point.x + baseVector.x; y1 = Point.y + baseVector.y; z1 = Point.z + baseVector.z;
+    x2 = Point.x - baseVector.x; y2 = Point.y - baseVector.y; z2 = Point.z - baseVector.z;
+
+    positions.push(x1);positions.push(y1);positions.push(z1);positions.push(x2);positions.push(y2);positions.push(z2);
+
+    for(let i=1;i<s;i++){
+        Point.applyAxisAngle(axiY,angle);
+        transVector = baseVector.clone();
+        transVector.applyAxisAngle(axiZ,angle*i);
+        transVector.applyAxisAngle(axiY,angle*i);
+
+        x1 = Point.x + transVector.x; y1 = Point.y + transVector.y; z1 = Point.z + transVector.z;
+        x2 = Point.x - transVector.x; y2 = Point.y - transVector.y; z2 = Point.z - transVector.z;
+
+        positions.push(x1);positions.push(y1);positions.push(z1);positions.push(x2);positions.push(y2);positions.push(z2);
+    }
+
+    return positions;
+}
+
+function calcInd(s){
+    var indices = [];
+    var i=0;
+    for(;i<s*2 - 2;i++){
+        indices.push(i); indices.push(i+1); indices.push(i+2);
+    }
+        indices.push(s*2-2); indices.push(s*2-1); indices.push(0);
+        indices.push(s*2-1); indices.push(0); indices.push(1);
+
+    return indices;
+}
+
 function createStrip(){
 
     strip = new THREE.BufferGeometry();
 
-    const positions = [
-        0   ,6 ,3.65,
-        0   ,6 ,2,
-        1.45 ,6 ,3.3,
-        0.8 ,6 ,1.9,
-        2.6 ,6 ,2.6,
-        1.45 ,6 ,1.45,
-        3.3 ,6 ,1.45,
-        1.9 ,6 ,0.8,
-        3.65   ,6 ,0,
-        2   ,6 ,0,
+    var segments = 64;
 
-        1.9 ,6 ,-0.8,
-        3.3 ,6 ,-1.45,
-        1.45 ,6 ,-1.45,
-        2.6 ,6 ,-2.6,
-        0.8 ,6 ,-1.9,
-        1.45 ,6 ,-3.3,
-        0   ,6 ,-2,
-        0   ,6 ,-3.65,
-
-        -1.45 ,6 ,-3.3,
-        -0.8 ,6 ,-1.9,
-        -2.6 ,6 ,-2.6,
-        -1.45 ,6 ,-1.45,
-        -3.3 ,6 ,-1.45,
-        -1.9 ,6 ,-0.8,
-        -3.65   ,6 ,0,
-        -2   ,6 ,0,
-
-        -3.3 ,6 ,1.45,
-        -1.9 ,6 ,0.8,
-        -2.6 ,6 ,2.6,
-        -1.45 ,6 ,1.45,
-        -1.45 ,6 ,3.3,
-        -0.8 ,6 ,1.9,
-    ];
-
-    const indices = [
-        0,1,2,
-        1,2,3,
-        2,3,4,
-        3,4,5,
-        4,5,6,
-        5,6,7,
-        6,7,8,
-        7,8,9,
-        8,9,10,
-        9,8,10,
-        8,10,11,
-        10,11,12,
-        11,12,13,
-        12,13,14,
-        13,14,15,
-        14,15,16,
-        15,16,17,
-        17,16,18,
-        16,18,19,
-        18,19,20,
-        19,20,21,
-        20,21,22,
-        21,22,23,
-        22,23,24,
-        23,24,25,
-        24,25,26,
-        25,26,27,
-        26,27,28,
-        27,28,29,
-        28,29,30,
-        29,30,31,
-        30,31,0,
-        31,0,1
-      ];
+    const positions = calcPos(5,2,7,segments); //radius to strip middle , width , height
+    const indices = calcInd(segments);
     
     strip.setIndex(indices);
 
