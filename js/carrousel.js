@@ -10,7 +10,7 @@ import * as Stats from 'three/addons/libs/stats.module.js';
 var camera, scene, renderer, controls;
 var ambientLight, directionalLight;
 var geometry, material,mesh;
-var carroussel, cylinder, ring1, ring2, ring3;
+var carroussel, strip, ring1, ring2, ring3;
 var innerRad = 1, ringThicc = 2, outerRad = 3;
 var ringPoints = [];
 
@@ -210,6 +210,96 @@ function addBox( x,y,z,parent){ //for testing
 
 //TODO: create objects
 
+function createStrip(){
+
+    strip = new THREE.BufferGeometry();
+
+    const positions = [
+        0   ,6 ,3.65,
+        0   ,6 ,2,
+        1.45 ,6 ,3.3,
+        0.8 ,6 ,1.9,
+        2.6 ,6 ,2.6,
+        1.45 ,6 ,1.45,
+        3.3 ,6 ,1.45,
+        1.9 ,6 ,0.8,
+        3.65   ,6 ,0,
+        2   ,6 ,0,
+
+        1.9 ,6 ,-0.8,
+        3.3 ,6 ,-1.45,
+        1.45 ,6 ,-1.45,
+        2.6 ,6 ,-2.6,
+        0.8 ,6 ,-1.9,
+        1.45 ,6 ,-3.3,
+        0   ,6 ,-2,
+        0   ,6 ,-3.65,
+
+        -1.45 ,6 ,-3.3,
+        -0.8 ,6 ,-1.9,
+        -2.6 ,6 ,-2.6,
+        -1.45 ,6 ,-1.45,
+        -3.3 ,6 ,-1.45,
+        -1.9 ,6 ,-0.8,
+        -3.65   ,6 ,0,
+        -2   ,6 ,0,
+
+        -3.3 ,6 ,1.45,
+        -1.9 ,6 ,0.8,
+        -2.6 ,6 ,2.6,
+        -1.45 ,6 ,1.45,
+        -1.45 ,6 ,3.3,
+        -0.8 ,6 ,1.9,
+    ];
+
+    const indices = [
+        0,1,2,
+        1,2,3,
+        2,3,4,
+        3,4,5,
+        4,5,6,
+        5,6,7,
+        6,7,8,
+        7,8,9,
+        8,9,10,
+        9,8,10,
+        8,10,11,
+        10,11,12,
+        11,12,13,
+        12,13,14,
+        13,14,15,
+        14,15,16,
+        15,16,17,
+        17,16,18,
+        16,18,19,
+        18,19,20,
+        19,20,21,
+        20,21,22,
+        21,22,23,
+        22,23,24,
+        23,24,25,
+        24,25,26,
+        25,26,27,
+        26,27,28,
+        27,28,29,
+        28,29,30,
+        29,30,31,
+        30,31,0,
+        31,0,1
+      ];
+    
+    strip.setIndex(indices);
+
+    material = new THREE.MeshBasicMaterial( { color:  Math.random() * 0xffffff, side: THREE.DoubleSide ,wireframe: false} );
+    strip.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+    
+    
+    const object = new THREE.Mesh( strip,material);
+
+    scene.add(object);
+
+}
+
 //////////////////////
 /* CHECK COLLISIONS */
 //////////////////////
@@ -275,6 +365,7 @@ function init() {
     createCamera();
     createLights();
     createCarroussel();
+    createStrip();
 
     render(scene,camera);
 
