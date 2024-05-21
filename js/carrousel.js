@@ -576,21 +576,18 @@ function onKeyDown(e) {
     case 51:  // Tecla '3' - Oscilar anel 3
         ring3.oscillating = !ring3.oscillating;
         break;
-    case 84:
+    case 84: //T
+    case 116: //t
         scene.traverse(function (object) {
             if (object instanceof THREE.Light) {
                 object.visible = !object.visible; // Inverte o estado de visibilidade
             }
         });
-        console.log('T');
-        break;
-    case 116: 
-        console.log("t");
+        console.log('t');
         break;
     case 68:  // Tecla 'D' - Toggle directional light
-        console.log("asdasdasd");
-        break;
     case 100: // d
+        console.log("d");
         directionalLight.visible = !directionalLight.visible;
         ambientLight.visible = !ambientLight.visible;
         break;
