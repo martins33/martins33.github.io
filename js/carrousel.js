@@ -639,16 +639,16 @@ function changeMaterial(object, materialType) {
 
         switch (materialType) {
             case 'Lambert':
-                newMaterial = new THREE.MeshLambertMaterial({ color: randomColor });
+                newMaterial = new THREE.MeshLambertMaterial({ color: randomColor, side: THREE.DoubleSide });
                 break;
             case 'Phong':
-                newMaterial = new THREE.MeshPhongMaterial({ color: randomColor, shininess: 100 });
+                newMaterial = new THREE.MeshPhongMaterial({ color: randomColor, shininess: 100, side: THREE.DoubleSide });
                 break;
             case 'Toon':
-                newMaterial = new THREE.MeshToonMaterial({ color: randomColor });
+                newMaterial = new THREE.MeshToonMaterial({ color: randomColor, side: THREE.DoubleSide });
                 break;
             case 'NormalMap':
-                newMaterial = new THREE.MeshNormalMaterial();
+                newMaterial = new THREE.MeshNormalMaterial({side: THREE.DoubleSide});
                 break;
         }
 
