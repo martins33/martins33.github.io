@@ -363,7 +363,6 @@ function calcPos(r,w,h,s,t){
     positions.push(x1);positions.push(y1);positions.push(z1);positions.push(x2);positions.push(y2);positions.push(z2);
     light = new THREE.PointLight( 0xffffff, 5, 100 );
     light.position.set( r, h+0.1, 0 );
-    scene.add( light );
     mobiusLigths.push(light);
 
     for(let i=1;i<s;i++){
@@ -384,7 +383,6 @@ function calcPos(r,w,h,s,t){
 
             light = new THREE.PointLight( 0xffffff, 5, 100 );
             light.position.set( Point.x+Vl.x, Point.y+Vl.y, Point.z+Vl.z );
-            scene.add( light );
             mobiusLigths.push(light);
         }
 
@@ -437,6 +435,10 @@ function createStrip(){
     strip.computeVertexNormals();
     
     const object = new THREE.Mesh( strip,material);
+
+    for(let i=0;i<8;i++){
+        object.add(mobiusLigths[i]);
+    }
 
     scene.add(object);
 
