@@ -22,6 +22,7 @@ var extrudeSettings = {
     bevelEnabled: false,
     curveSegments: 32
 };
+    
 
 
 /////////////////////
@@ -199,23 +200,17 @@ function createCylinder(parent, radius, tubularSegments, radialSegments) {
     
     geometry = new THREE.ExtrudeGeometry(arcShape, extrudeSettings);
 
-    material = new THREE.MeshNormalMaterial();  // Normal material
+    material = new THREE.MeshStandardMaterial( { color:  Math.random() * 0xffffff, side: THREE.DoubleSide ,wireframe: false} );  // Normal material
     mesh = new THREE.Mesh(geometry, material);
     mesh.rotateX(Math.PI/2);
+
+    mesh.userData.changeMaterial = true; /*transformar ou nao */
+    
 
     //mesh.position.y += 1;
 
     parent.add(mesh);
-
-    //TODO: cada objeto deve ter 4 tipos de materiais, e devemos podemos mudar o tipo de shading com teclas
-    /*
-    const materials = [
-        new THREE.MeshLambertMaterial({ color: 0xff0000 }),  // Red Lambert material
-        new THREE.MeshPhongMaterial({ color: 0x00ff00, shininess: 100 }),  // Green Phong material
-        new THREE.MeshToonMaterial({ color: 0xffffff }),  // Yellow Toon material
-        new THREE.MeshNormalMaterial()  // Normal material
-    ];
-    */
+    
 }
 
 function createRings(parent) {
@@ -257,7 +252,7 @@ function addRing(inR,otR,parent){
     arcShape.holes.push(holePath);
     
     var ring = new THREE.ExtrudeGeometry(arcShape, extrudeSettings);
-    const material = new THREE.MeshBasicMaterial( { color:  Math.random() * 0xffffff, side: THREE.DoubleSide ,wireframe: false} );
+    const material = new THREE.MeshStandardMaterial( { color:  Math.random() * 0xffffff, side: THREE.DoubleSide ,wireframe: false} );
     ring.rotateX(Math.PI/2);
     const mesh = new THREE.Mesh( ring, material ) ;
 
@@ -268,7 +263,8 @@ function addRing(inR,otR,parent){
         let z = 0;
         addParametricSurface(x, y, z, angle, parent, i);
     }
- 
+    
+    mesh.userData.changeMaterial = true; /*transformar ou nao */
     parent.add( mesh );
 }
 
@@ -315,8 +311,9 @@ function addParametricSurface(x, y, z, angle, parent, index){
 
     geometry.scale(randomSize, randomSize, randomSize);
 
-    material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+    material = new THREE.MeshPhongMaterial({ color: 0xff0000, wireframe: true });
     mesh = new THREE.Mesh(geometry, material);
+    mesh.userData.changeMaterial = true; /*transformar ou nao */
     surfaceInner.add(mesh);
     surface.add(surfaceInner);
     surface.position.set(x,y,z);
@@ -337,6 +334,8 @@ function addParametricSurface(x, y, z, angle, parent, index){
 
     ringPoints.push(surface); //for easy access
     parent.add(surface);
+
+    
 }
 
 //TODO: create objects
@@ -440,6 +439,7 @@ function createStrip(){
         object.add(mobiusLigths[i]);
     }
 
+    object.userData.changeMaterial = true; /*transformar ou nao */
     scene.add(object);
 
 }
@@ -565,10 +565,10 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict';
-
     switch (e.keyCode) {
     case 49:  // Tecla '1' - Oscilar anel 1
         ring1.oscillating = !ring1.oscillating;
+        console.log("1");
         break;
     case 50:  // Tecla '2' - Oscilar anel 2
         ring2.oscillating = !ring2.oscillating;
@@ -576,7 +576,20 @@ function onKeyDown(e) {
     case 51:  // Tecla '3' - Oscilar anel 3
         ring3.oscillating = !ring3.oscillating;
         break;
+    case 84:
+        scene.traverse(function (object) {
+            if (object instanceof THREE.Light) {
+                object.visible = !object.visible; // Inverte o estado de visibilidade
+            }
+        });
+        console.log('T');
+        break;
+    case 116: 
+        console.log("t");
+        break;
     case 68:  // Tecla 'D' - Toggle directional light
+        console.log("asdasdasd");
+        break;
     case 100: // d
         directionalLight.visible = !directionalLight.visible;
         ambientLight.visible = !ambientLight.visible;
@@ -591,20 +604,74 @@ function onKeyDown(e) {
         break;
     case 81:  // Tecla 'Q' - Toggle Gourand (diffuse) shading
     case 113:  // q
-        
+        changeMaterialsInScene(scene, 'Lambert');
+        console.log('Q');
         break;
     case 87:  // Tecla 'W' - Toggle Phong shading
     case 119: // w
-        
+        changeMaterialsInScene(scene, 'Phong');
+        console.log('W');
         break;
     case 69:  // Tecla 'E' - Toggle Cartoon shading
     case 101: // e
-
+        changeMaterialsInScene(scene, 'Toon');
+        console.log('E');
         break;
     case 82:  // Tecla 'R' - Toggle NormalMap shading
+        changeMaterialsInScene(scene, 'NormalMap');
+        console.log('R');
+        break;    
     case 114: // r
 
         break;
+    }
+}
+
+////
+/*shading and lighting*/
+////
+// Function to change the material of an object with a random color
+function changeMaterial(object, materialType) {
+    if (object instanceof THREE.Mesh && object.userData.changeMaterial) {
+        // Generate a new random color for each object
+        const randomColor = new THREE.Color(Math.random() * 0xffffff);
+        let newMaterial;
+
+        switch (materialType) {
+            case 'Lambert':
+                newMaterial = new THREE.MeshLambertMaterial({ color: randomColor });
+                break;
+            case 'Phong':
+                newMaterial = new THREE.MeshPhongMaterial({ color: randomColor, shininess: 100 });
+                break;
+            case 'Toon':
+                newMaterial = new THREE.MeshToonMaterial({ color: randomColor });
+                break;
+            case 'NormalMap':
+                newMaterial = new THREE.MeshNormalMaterial();
+                break;
+        }
+
+        object.material = newMaterial;
+    }
+}
+
+// Function to iterate through all objects in the scene and change their material
+function changeMaterialsInScene(scene, materialType) {
+    scene.traverse(function (object) {
+        // Apply material with random color to each object individually
+        changeMaterial(object, materialType);
+    });
+}
+
+///////////////////////
+/* KEY UP CALLBACK */
+///////////////////////
+function onKeyUp(e){
+    'use strict';
+    
+    switch (e.keyCode) {
+    //TODO: remove this?
     }
 }
 
