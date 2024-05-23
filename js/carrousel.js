@@ -4,11 +4,12 @@ import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.j
 import { VRButton } from 'three/addons/webxr/VRButton.js';
 import * as Stats from 'three/addons/libs/stats.module.js';
 
+
 //////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
 
-var camera, scene, renderer, controls;
+var camera, stereoCamera, scene, renderer, controls;
 var ambientLight, directionalLight;
 var geometry, material,mesh;
 var carroussel, strip, ring1, ring2, ring3;
@@ -69,8 +70,12 @@ function createCamera() {
 
     controls = new OrbitControls( camera, renderer.domElement );
     controls.update();
-    //TODO: create other cameras
+    
+    stereoCamera = new THREE.StereoCamera();
+    stereoCamera.aspect = 0.5; // Set aspect ratio for stereo rendering
 }
+
+
 
 /////////////////////
 /* CREATE LIGHT(S) */
@@ -487,7 +492,9 @@ function init() {
         antialias: true
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.xr.enabled = true; // Enable WebXR
     document.body.appendChild(renderer.domElement);
+    document.body.appendChild( VRButton.createButton( renderer ) );
 
     createScene();
     createSkyDome();
