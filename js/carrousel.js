@@ -548,9 +548,12 @@ function animate() {
     //TODO
     //testing();
     
-    update();
-    render();
-    requestAnimationFrame(animate);
+    renderer.setAnimationLoop( function () {
+
+        update(); // Update the scene's state
+        render();
+    
+    } );
 }
 
 ////////////////////////////
